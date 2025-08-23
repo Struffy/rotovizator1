@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ротовизатор Pro</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0066cc;
+      --primary-hover: #0052a3;
+      --secondary: #1a1a2e;
+      --accent: #00d4ff;
+      --glass: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --metal: linear-gradient(135deg, #e8e8e8 0%, #a8a8a8 50%, #e8e8e8 100%);
+      --metal-dark: linear-gradient(135deg, #4a4a4a 0%, #2a2a2a 50%, #4a4a4a 100%);
+      --text: #ffffff;
+      --text-secondary: #b8b8b8;
+      --shadow: rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+          background: linear-gradient(
+                    135deg, 
+                    rgba(15, 15, 30, 0.5) 0%, 
+                    rgba(26, 26, 46, 0.5) 50%, 
+                    rgba(22, 33, 62, 0.5) 100%
+                ),
+                url('wallpaper.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+      color: var(--text);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 102, 204, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease-out;
+    }
+
+    .loading-spinner {
+      width: 80px;
+      height: 80px;
+      border: 3px solid rgba(0, 212, 255, 0.1);
+      border-top: 3px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+    }
+
+    .loading-text {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.2rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .main-container {
+      display: none;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .slace {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      box-shadow: 
+        0 8px 32px var(--shadow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 0 1px rgba(0, 212, 255, 0.1);
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slace::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-family: 'Roboto', monospace;
+      font-size: 2.5rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      background: var(--metal);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+    }
+
+    .input-container {
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 20px;
+      font-size: 16px;
+      font-family: 'Roboto', sans-serif;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: var(--text);
+      resize: vertical;
+      transition: all 0.3s ease;
+      box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.3),
+        0 0 0 1px transparent;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.3),
+        0 0 0 1px var(--accent),
+        0 0 20px rgba(0, 212, 255, 0.2);
+    }
+
+    textarea::placeholder {
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    .primary-button-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    .primary-btn {
+      background: var(--metal-dark);
+      color: var(--text);
+      font-size: 18px;
+      padding: 18px 50px;
+      border-radius: 50px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .primary-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.4), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .primary-btn:hover::before {
+      left: 100%;
+    }
+
+    #output {
+      margin-top: 25px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      min-height: 80px;
+      font-family: 'Roboto', sans-serif;
+      white-space: pre-wrap;
+      font-size: 16px;
+      color: var(--text);
+      box-shadow: 
+        inset 0 2px 4px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(0, 212, 255, 0.1);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .download-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 2000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .download-overlay.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .download-modal {
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      min-width: 300px;
+    }
+
+    .download-modal h3 {
+      color: var(--text);
+      margin-bottom: 20px;
+      font-family: 'Orbitron', monospace;
+      font-size: 1.3rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .download-modal select {
+      width: 100%;
+      padding: 15px;
+      font-size: 16px;
+      font-family: 'Roboto', sans-serif;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: var(--text);
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
+    .download-modal select option {
+      background: var(--secondary);
+      color: var(--text);
+    }
+
+    .download-modal-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .download-modal button {
+      padding: 12px 25px;
+      font-size: 14px;
+      border-radius: 25px;
+    }
+
+    .download-cancel {
+      background: linear-gradient(135deg, #666, #444);
+    }
+
+    .download-confirm {
+      background: var(--metal-dark);
+    }
+
+    button {
+      padding: 15px 25px;
+      font-size: 16px;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 8px 25px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--accent);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .icon-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      padding: 0;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .icon-btn:hover {
+      background: rgba(0, 212, 255, 0.1);
+      border-color: var(--accent);
+    }
+
+    footer {
+      margin-top: 30px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(10px);
+      padding: 15px 25px;
+      border-radius: 50px;
+      border: 1px solid var(--glass-border);
+    }
+
+    footer img {
+      width: 24px;
+      height: 24px;
+      filter: brightness(0.8);
+      transition: all 0.3s ease;
+    }
+
+    footer a:hover img {
+      filter: brightness(1.2);
+      transform: scale(1.1);
+    }
+
+    .music-control {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .music-control:hover {
+      background: rgba(0, 212, 255, 0.1);
+      border-color: var(--accent);
+      transform: scale(1.1);
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      .slace {
+        padding: 25px;
+        margin: 10px 0;
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 12px 20px;
+      }
+
+      .primary-btn {
+        font-size: 16px;
+        padding: 15px 40px;
+      }
+
+      .icon-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+      }
+
+      textarea {
+        height: 120px;
+        padding: 15px;
+        font-size: 15px;
+      }
+
+      footer {
+        gap: 10px;
+        font-size: 12px;
+        padding: 12px 20px;
+      }
+
+      .music-control {
+        top: 10px;
+        right: 10px;
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+      }
+    }
+
+    @media (max-height: 700px) {
+      body {
+        padding: 15px 20px;
+      }
+      
+      h1 {
+        font-size: 1rem;
+        margin-bottom: 15px;
+      }
+      
+      textarea {
+        height: 100px;
+      }
+      
+      .slace {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Инициализация...</div>
+  </div>
+
+  <div class="main-container" id="mainContainer">
+    <div class="music-control" id="musicToggle">
+      <i class="fas fa-volume-up" id="volumeIcon"></i>
+    </div>
+
+    <div class="slace">
+      <h1>Ротовизатор</h1>
+      
+      <div class="input-container">
+        <textarea id="input" placeholder="Введите текст для преобразования..."></textarea>
+      </div>
+
+      <div class="primary-button-container">
+        <button class="primary-btn" id="replaceBtn">
+          <i class="fas fa-sync-alt"></i> Преобразовать
+        </button>
+      </div>
+
+      <div id="output"></div>
+
+      <div class="action-buttons">
+        <button class="icon-btn" id="clearBtn" title="Очистить">
+          <i class="fas fa-trash"></i>
+        </button>
+        
+        <button class="icon-btn" id="copyBtn" title="Копировать">
+          <i class="fas fa-copy"></i>
+        </button>
+        
+        <button class="icon-btn" id="downloadBtn" title="Скачать">
+          <i class="fas fa-download"></i>
+        </button>
+      </div>
+    </div>
+
+    <footer>
+      <span>Версия 2.4.2 | Lady Gaga State ©</span>
+      <a href="https://t.me/gaga_repblic" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Telegram_X_2019_Logo.svg/1024px-Telegram_X_2019_Logo.svg.png" alt="Telegram Icon">
+      </a>
+    </footer>
+  </div>
+
+  <div class="download-overlay" id="downloadOverlay">
+    <div class="download-modal">
+      <h3>Выберите формат</h3>
+      <select id="formatSelect">
+  <!-- Базовые -->
+  <option value="txt" selected>TXT</option>
+  <option value="html">HTML</option>
+  <option value="xml">XML</option>
+  <option value="json">JSON</option>
+  <option value="csv">CSV</option>
+
+  <!-- Документы -->
+  <option value="doc">DOC</option>
+  <option value="docx">DOCX</option>
+  <option value="odt">ODT</option>
+  <option value="rtf">RTF</option>
+  <option value="md">Markdown (MD)</option>
+  <option value="yaml">YAML</option>
+  <option value="ini">INI</option>
+  <option value="toml">TOML</option>
+  <option value="tex">LaTeX (TEX)</option>
+  <option value="log">LOG</option>
+
+  <!-- Таблицы -->
+  <option value="xls">XLS</option>
+  <option value="xlsx">XLSX</option>
+  <option value="ods">ODS</option>
+  <option value="tsv">TSV</option>
+  <option value="psv">PSV</option>
+
+  <!-- Архивы -->
+  <option value="zip">ZIP</option>
+  <option value="tar">TAR</option>
+  <option value="gz">GZ</option>
+  <option value="7z">7Z</option>
+  <option value="rar">RAR</option>
+
+  <!-- Веб -->
+  <option value="htm">HTM</option>
+  <option value="xhtml">XHTML</option>
+  <option value="rss">RSS</option>
+  <option value="atom">ATOM</option>
+  <option value="svg">SVG</option>
+
+  <!-- Языки программирования -->
+  <option value="js">JavaScript</option>
+  <option value="ts">TypeScript</option>
+  <option value="py">Python</option>
+  <option value="rb">Ruby</option>
+  <option value="php">PHP</option>
+  <option value="java">Java</option>
+  <option value="cs">C#</option>
+  <option value="cpp">C++</option>
+  <option value="c">C</option>
+  <option value="go">Go</option>
+  <option value="rs">Rust</option>
+  <option value="kt">Kotlin</option>
+  <option value="swift">Swift</option>
+  <option value="scala">Scala</option>
+  <option value="sh">Bash</option>
+  <option value="ps1">PowerShell</option>
+  <option value="sql">SQL</option>
+  <option value="r">R</option>
+  <option value="jl">Julia</option>
+  <option value="hs">Haskell</option>
+  <option value="lisp">Lisp</option>
+  <option value="clj">Clojure</option>
+  <option value="ml">OCaml</option>
+  <option value="prolog">Prolog</option>
+  <option value="pas">Pascal</option>
+  <option value="asm">Assembly</option>
+  <option value="vhd">VHDL</option>
+  <option value="v">Verilog</option>
+  <option value="sol">Solidity</option>
+  <option value="nim">Nim</option>
+  <option value="cr">Crystal</option>
+  <option value="zig">Zig</option>
+</select>
+
+      <div class="download-modal-buttons">
+        <button class="download-cancel" id="downloadCancel">Отмена</button>
+        <button class="download-confirm" id="downloadConfirm">Скачать</button>
+      </div>
+    </div>
+  </div>
+
+  <audio id="backgroundMusic" loop>
+    <source src="main_song.mp3" type="audio/mpeg">
+  </audio>
+
+
+<script src="rt.js"></script>
+
+  <script>
+    // Переменные
+    const loadingScreen = document.getElementById('loadingScreen');
+    const mainContainer = document.getElementById('mainContainer');
+    const backgroundMusic = document.getElementById('backgroundMusic');
+    const musicToggle = document.getElementById('musicToggle');
+    const volumeIcon = document.getElementById('volumeIcon');
+    let isMusicPlaying = false;
+
+    // Загрузка и инициализация
+    window.addEventListener('load', function() {
+      // Попытка загрузить и воспроизвести музыку
+      backgroundMusic.addEventListener('canplay', function() {
+        setTimeout(() => {
+          loadingScreen.style.opacity = '0';
+          setTimeout(() => {
+            loadingScreen.style.display = 'none';
+            mainContainer.style.display = 'block';
+            
+            // Автовоспроизведение музыки
+            backgroundMusic.play().then(() => {
+              isMusicPlaying = true;
+              volumeIcon.className = 'fas fa-volume-up';
+            }).catch(() => {
+              console.log('Автовоспроизведение заблокировано');
+              volumeIcon.className = 'fas fa-volume-mute';
+            });
+          }, 500);
+        }, 1000);
+      });
+
+      backgroundMusic.addEventListener('error', function() {
+        // Если музыка не загрузилась, все равно показываем страницу
+        setTimeout(() => {
+          loadingScreen.style.opacity = '0';
+          setTimeout(() => {
+            loadingScreen.style.display = 'none';
+            mainContainer.style.display = 'block';
+          }, 500);
+        }, 2000);
+      });
+
+      // Загружаем музыку
+      backgroundMusic.load();
+    });
+
+    // Управление музыкой
+    musicToggle.addEventListener('click', function() {
+      if (isMusicPlaying) {
+        backgroundMusic.pause();
+        volumeIcon.className = 'fas fa-volume-mute';
+        isMusicPlaying = false;
+      } else {
+        backgroundMusic.play().then(() => {
+          volumeIcon.className = 'fas fa-volume-up';
+          isMusicPlaying = true;
+        }).catch(() => {
+          console.log('Не удалось воспроизвести музыку');
+        });
+      }
+    });
+
+
+
+    // Очистить
+    document.getElementById('clearBtn').addEventListener('click', function() {
+      document.getElementById('input').value = '';
+      document.getElementById('output').innerText = '';
+    });
+
+    // Копировать
+    document.getElementById('copyBtn').addEventListener('click', async function() {
+      const outputText = document.getElementById('output').innerText;
+      
+      if (!outputText || outputText === "Введите текст для преобразования.") {
+        alert('Нет текста для копирования!');
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(outputText);
+        // Визуальная обратная связь
+        this.style.background = 'rgba(0, 212, 255, 0.2)';
+        setTimeout(() => {
+          this.style.background = '';
+        }, 300);
+      } catch (err) {
+        console.log('Не удалось скопировать текст:', err);
+      }
+    });
+
+    // Скачивание файлов
+    const downloadBtn = document.getElementById('downloadBtn');
+    const downloadOverlay = document.getElementById('downloadOverlay');
+    const downloadCancel = document.getElementById('downloadCancel');
+    const downloadConfirm = document.getElementById('downloadConfirm');
+    const formatSelect = document.getElementById('formatSelect');
+
+    downloadBtn.addEventListener('click', function() {
+      const outputText = document.getElementById('output').innerText;
+      
+      if (!outputText || outputText === "Введите текст для преобразования.") {
+        alert('Нет текста для скачивания!');
+        return;
+      }
+
+      downloadOverlay.classList.add('show');
+    });
+
+    downloadCancel.addEventListener('click', function() {
+      downloadOverlay.classList.remove('show');
+    });
+
+    downloadOverlay.addEventListener('click', function(e) {
+      if (e.target === downloadOverlay) {
+        downloadOverlay.classList.remove('show');
+      }
+    });
+
+    downloadConfirm.addEventListener('click', function() {
+      const format = formatSelect.value;
+      const outputText = document.getElementById('output').innerText;
+      downloadFile(outputText, format);
+      downloadOverlay.classList.remove('show');
+    });
+
+    function downloadFile(content, format) {
+      let filename, mimeType, fileContent;
+
+      switch (format) {
+        case 'txt':
+          filename = 'rotovized_text.txt';
+          mimeType = 'text/plain';
+          fileContent = content;
+          break;
+        case 'html':
+          filename = 'rotovized_text.html';
+          mimeType = 'text/html';
+          fileContent = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Преобразованный текст</title></head><body><pre>${content}</pre></body></html>`;
+          break;
+        case 'xml':
+          filename = 'rotovized_text.xml';
+          mimeType = 'application/xml';
+          fileContent = `<?xml version="1.0" encoding="UTF-8"?><document><content><![CDATA[${content}]]></content></document>`;
+          break;
+        case 'json':
+          filename = 'rotovized_text.json';
+          mimeType = 'application/json';
+          fileContent = JSON.stringify({ rotovizedText: content, timestamp: new Date().toISOString() }, null, 2);
+          break;
+        case 'csv':
+          filename = 'rotovized_text.csv';
+          mimeType = 'text/csv';
+          fileContent = `"Преобразованный текст"\n"${content.replace(/"/g, '""')}"`;
+          break;
+		      case 'js':
+      filename = 'rotovized_text.js';
+      mimeType = 'application/javascript';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+    case 'ts':
+      filename = 'rotovized_text.ts';
+      mimeType = 'application/typescript';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+    case 'py':
+      filename = 'rotovized_text.py';
+      mimeType = 'text/x-python';
+      fileContent = `# Ротовизатор\n${content}`;
+      break;
+    case 'rb':
+      filename = 'rotovized_text.rb';
+      mimeType = 'text/x-ruby';
+      fileContent = `# Ротовизатор\n${content}`;
+      break;
+    case 'php':
+      filename = 'rotovized_text.php';
+      mimeType = 'application/x-httpd-php';
+      fileContent = `<?php\n// Ротовизатор\n${content}`;
+      break;
+    case 'lua':
+      filename = 'rotovized_text.lua';
+      mimeType = 'text/x-lua';
+      fileContent = `-- Ротовизатор\n${content}`;
+      break;
+    case 'pl':
+      filename = 'rotovized_text.pl';
+      mimeType = 'text/x-perl';
+      fileContent = `# Ротовизатор\n${content}`;
+      break;
+    case 'sh':
+      filename = 'rotovized_text.sh';
+      mimeType = 'application/x-sh';
+      fileContent = `#!/bin/bash\n# Ротовизатор\n${content}`;
+      break;
+    case 'bat':
+      filename = 'rotovized_text.bat';
+      mimeType = 'application/x-msdos-program';
+      fileContent = `:: Ротовизатор\n${content}`;
+      break;
+    case 'ps1':
+      filename = 'rotovized_text.ps1';
+      mimeType = 'text/x-powershell';
+      fileContent = `# Ротовизатор\n${content}`;
+      break;
+
+    // ====== 2. C-подобные ======
+    case 'c':
+      filename = 'rotovized_text.c';
+      mimeType = 'text/x-csrc';
+      fileContent = `/* Ротовизатор */\n${content}`;
+      break;
+    case 'h':
+      filename = 'rotovized_text.h';
+      mimeType = 'text/x-chdr';
+      fileContent = `/* Ротовизатор */\n${content}`;
+      break;
+    case 'cpp':
+      filename = 'rotovized_text.cpp';
+      mimeType = 'text/x-c++src';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+    case 'cs':
+      filename = 'rotovized_text.cs';
+      mimeType = 'text/x-csharp';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+    case 'java':
+      filename = 'rotovized_text.java';
+      mimeType = 'text/x-java';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+    case 'go':
+      filename = 'rotovized_text.go';
+      mimeType = 'text/x-go';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+    case 'rs':
+      filename = 'rotovized_text.rs';
+      mimeType = 'text/x-rust';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+    case 'kt':
+      filename = 'rotovized_text.kt';
+      mimeType = 'text/x-kotlin';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+    case 'swift':
+      filename = 'rotovized_text.swift';
+      mimeType = 'text/x-swift';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+    case 'scala':
+      filename = 'rotovized_text.scala';
+      mimeType = 'text/x-scala';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+
+    // ====== 3. Научные и данные ======
+    case 'sql':
+      filename = 'rotovized_text.sql';
+      mimeType = 'application/sql';
+      fileContent = `-- Ротовизатор\n${content}`;
+      break;
+    case 'r':
+      filename = 'rotovized_text.r';
+      mimeType = 'text/x-rsrc';
+      fileContent = `# Ротовизатор\n${content}`;
+      break;
+    case 'matlab':
+      filename = 'rotovized_text.m';
+      mimeType = 'text/x-matlab';
+      fileContent = `% Ротовизатор\n${content}`;
+      break;
+    case 'octave':
+      filename = 'rotovized_text.m';
+      mimeType = 'text/x-octave';
+      fileContent = `% Ротовизатор\n${content}`;
+      break;
+    case 'jl':
+      filename = 'rotovized_text.jl';
+      mimeType = 'text/x-julia';
+      fileContent = `# Ротовизатор\n${content}`;
+      break;
+    case 'f90':
+      filename = 'rotovized_text.f90';
+      mimeType = 'text/x-fortran';
+      fileContent = `! Ротовизатор\n${content}`;
+      break;
+    case 'cbl':
+      filename = 'rotovized_text.cbl';
+      mimeType = 'text/x-cobol';
+      fileContent = `* Ротовизатор\n${content}`;
+      break;
+
+    // ====== 4. Функциональные и логические ======
+    case 'hs':
+      filename = 'rotovized_text.hs';
+      mimeType = 'text/x-haskell';
+      fileContent = `-- Ротовизатор\n${content}`;
+      break;
+    case 'erl':
+      filename = 'rotovized_text.erl';
+      mimeType = 'text/x-erlang';
+      fileContent = `% Ротовизатор\n${content}`;
+      break;
+    case 'ex':
+      filename = 'rotovized_text.ex';
+      mimeType = 'text/x-elixir';
+      fileContent = `# Ротовизатор\n${content}`;
+      break;
+    case 'ml':
+      filename = 'rotovized_text.ml';
+      mimeType = 'text/x-ocaml';
+      fileContent = `(* Ротовизатор *)\n${content}`;
+      break;
+    case 'fs':
+      filename = 'rotovized_text.fs';
+      mimeType = 'text/x-fsharp';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+    case 'clj':
+      filename = 'rotovized_text.clj';
+      mimeType = 'text/x-clojure';
+      fileContent = `;; Ротовизатор\n${content}`;
+      break;
+    case 'lisp':
+      filename = 'rotovized_text.lisp';
+      mimeType = 'text/x-common-lisp';
+      fileContent = `;; Ротовизатор\n${content}`;
+      break;
+    case 'scm':
+      filename = 'rotovized_text.scm';
+      mimeType = 'text/x-scheme';
+      fileContent = `;; Ротовизатор\n${content}`;
+      break;
+    case 'prolog':
+      filename = 'rotovized_text.pro';
+      mimeType = 'text/x-prolog';
+      fileContent = `% Ротовизатор\n${content}`;
+      break;
+
+    // ====== 5. Экзотика и новые ======
+    case 'pas':
+      filename = 'rotovized_text.pas';
+      mimeType = 'text/x-pascal';
+      fileContent = `{ Ротовизатор }\n${content}`;
+      break;
+    case 'adb':
+      filename = 'rotovized_text.adb';
+      mimeType = 'text/x-ada';
+      fileContent = `-- Ротовизатор\n${content}`;
+      break;
+    case 'asm':
+      filename = 'rotovized_text.asm';
+      mimeType = 'text/x-asm';
+      fileContent = `; Ротовизатор\n${content}`;
+      break;
+    case 'vhd':
+      filename = 'rotovized_text.vhd';
+      mimeType = 'text/x-vhdl';
+      fileContent = `-- Ротовизатор\n${content}`;
+      break;
+    case 'v':
+      filename = 'rotovized_text.v';
+      mimeType = 'text/x-verilog';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+    case 'nim':
+      filename = 'rotovized_text.nim';
+      mimeType = 'text/x-nim';
+      fileContent = `# Ротовизатор\n${content}`;
+      break;
+    case 'cr':
+      filename = 'rotovized_text.cr';
+      mimeType = 'text/x-crystal';
+      fileContent = `# Ротовизатор\n${content}`;
+      break;
+    case 'zig':
+      filename = 'rotovized_text.zig';
+      mimeType = 'text/x-zig';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+    case 'sol':
+      filename = 'rotovized_text.sol';
+      mimeType = 'text/x-solidity';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+    case 'move':
+      filename = 'rotovized_text.move';
+      mimeType = 'text/x-move';
+      fileContent = `// Ротовизатор\n${content}`;
+      break;
+        default:
+          return;
+      }
+
+      const blob = new Blob([fileContent], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
