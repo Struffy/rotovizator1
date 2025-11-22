@@ -29,8 +29,8 @@ function replaceEnding(word) {
         ['п', 'p'], ['р', 'r'], ['с', 's'], ['т', 't'], ['у', 'u'],
         ['в', 'v'], ['й', 'y'], ['з', 'z'], ['ъ', 'é'], ['ь', 'é'],
         ['я', 'ä'], ['ё', 'ё'], ['ч', 'ch'], ['ж', 'j'], ['ш', 'š'],
-        ['щ', 'ś'], ['э', 'ě']
-    ];
+        ['щ', 'ś'], ['э', 'ě'],['ы', 'ũ']
+    ;
 
     // Функция для сохранения исходного регистра
     function matchCase(original, replacement) {
@@ -76,3 +76,4 @@ document.getElementById('replaceBtn').onclick = function () {
 
     document.getElementById('output').innerText = processedTokens.join('');
 };
+
